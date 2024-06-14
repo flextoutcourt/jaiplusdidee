@@ -1,0 +1,398 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Group {
+  id         Int      @id @default(autoincrement())
+  uuid       String
+  name       String
+  location   String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  deleted    Boolean? @default(false)
+}
+
+model Civilian {
+  id             Int           @id @default(autoincrement())
+  uuid           String
+  firstname      String
+  lastname       String
+  alias          String?
+  phone          String
+  dateOfBirth    DateTime
+  Car            Car[]
+  Licence        Licence[]
+  Weapon         Weapon[]
+  Homicide       Homicide?
+  Suspect        Suspect[]
+  Agent          Agent[]
+  CriminalCase   CriminalCase? @relation(fields: [criminalCaseId], references: [id])
+  Testimony      Testimony[]
+  criminalCaseId Int?          @unique
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @default(now())
+  deleted        Boolean?      @default(false)
+}
+
+model Grade {
+  id         Int                @id @default(autoincrement())
+  uuid       String
+  name       String
+  rank       String
+  Agents     Agent[]
+  Accesses   AccessesOnGrades[]
+  created_at DateTime           @default(now())
+  updated_at DateTime           @default(now())
+  deleted    Boolean?           @default(false)
+}
+
+model Access {
+  id           Int                @id @default(autoincrement())
+  uuid         String
+  name         String
+  grades       AccessesOnGrades[]
+  rank         Int                @default(0)
+  agentGroupId Int
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @default(now())
+  deleted      Boolean?           @default(false)
+}
+
+model AgentGroup {
+  id         Int      @id @default(autoincrement())
+  uuid       String
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  deleted    Boolean? @default(false)
+}
+
+model AccessesOnGrades {
+  grade    Grade  @relation(fields: [gradeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  gradeId  Int
+  access   Access @relation(fields: [accessId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  accessId Int
+
+  @@id([gradeId, accessId])
+}
+
+model SuspectOnHomicide {
+  suspect    Suspect  @relation(fields: [suspectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  suspectId  Int
+  homicide   Homicide @relation(fields: [homicideId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  homicideId Int
+
+  @@id([suspectId, homicideId])
+}
+
+model Agent {
+  id            Int                     @id @default(autoincrement())
+  uuid          String
+  matricule     String
+  since         DateTime
+  Grade         Grade                   @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  gradeId       Int
+  password      String
+  Civilian      Civilian                @relation(fields: [civilianId], references: [id], onDelete: Cascade)
+  Sanctions     Sanction[]
+  Reports       Report[]
+  Licence       Licence[]
+  Weapons       Weapon[]
+  Testimony     Testimony[]
+  civilianId    Int                     @unique
+  Backup        Backup[]
+  Entities      EntitiesOnAgents[]
+  Conversations AgentsOnConversations[]
+  created_at    DateTime                @default(now())
+  updated_at    DateTime                @default(now())
+  deleted       Boolean?                @default(false)
+}
+
+model EntitiesOnAgents {
+  agent    Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId  Int
+  entity   Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  entityId Int
+
+  @@id([agentId, entityId])
+}
+
+enum EntityE {
+  SASPS
+  SASPN
+  SPECIALUNIT
+  DOA
+  CRIME
+  PS
+  HP
+  K9
+  HRT
+}
+
+model Entity {
+  id         Int                @id @default(autoincrement())
+  uuid       String
+  name       EntityE
+  code       String
+  channel    String
+  agents     EntitiesOnAgents[]
+  Backup     Backup[]
+  created_at DateTime           @default(now())
+  updated_at DateTime           @default(now())
+  deleted    Boolean?           @default(false)
+}
+
+model Sanction {
+  id          Int       @id @default(autoincrement())
+  uuid        String
+  type        String
+  description String
+  disapears   DateTime?
+  agent       Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId     Int
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now())
+  deleted     Boolean?  @default(false)
+}
+
+model Report {
+  id         Int      @id @default(autoincrement())
+  uuid       String
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId    Int
+  case       Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  deleted    Boolean? @default(false)
+}
+
+enum CarType {
+  SEDAN
+  HATCHBACK
+  COUPES
+  CONVERTIBLE
+  SUV
+  TRUCK
+  VAN
+  SPORT
+  LUXURY
+  ELECTRIC
+  COMPACT
+  HYBRID
+  VINTAGE
+  MUSCLE
+  OFFROAD
+  MICRO
+}
+
+model Car {
+  id         Int      @id @default(autoincrement())
+  uuid       String
+  brand      String
+  model      String
+  immat      String
+  owner      Civilian @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    Int
+  type       CarType
+  stolen     Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  deleted    Boolean? @default(false)
+}
+
+model Case {
+  id             Int              @id @default(autoincrement())
+  uuid           String
+  name           String
+  evidences      Evidence[]
+  reports        Report[]
+  CriminalRecord CriminalRecord[]
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @default(now())
+  deleted        Boolean?         @default(false)
+}
+
+enum EvidenceType {
+  TESTIMONY
+  WEAPON
+}
+
+model Evidence {
+  id          Int          @id @default(autoincrement())
+  uuid        String
+  Case        Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  caseId      Int
+  name        String
+  type        EvidenceType
+  Weapon      Weapon?      @relation(fields: [weaponId], references: [id], onDelete: SetNull)
+  weaponId    Int?
+  Testimony   Testimony?   @relation(fields: [testimonyId], references: [id], onDelete: SetNull)
+  testimonyId Int?
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @default(now())
+  deleted     Boolean?     @default(false)
+}
+
+model Testimony {
+  id         Int        @id @default(autoincrement())
+  uuid       String
+  content    String
+  ReportedTo Agent      @relation(fields: [agentId], references: [id])
+  Civilian   Civilian   @relation(fields: [civilianId], references: [id])
+  agentId    Int
+  civilianId Int
+  Evidence   Evidence[]
+  created_at DateTime   @default(now())
+  updated_at DateTime
+  deleted    Boolean?   @default(false)
+}
+
+model Homicide {
+  id                Int                 @id @default(autoincrement())
+  uuid              String
+  description       String
+  civilian          Civilian            @relation(fields: [civilianId], references: [id])
+  civilianId        Int                 @unique
+  SuspectOnHomicide SuspectOnHomicide[]
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @default(now())
+  deleted           Boolean?            @default(false)
+}
+
+model Suspect {
+  id                Int                 @id @default(autoincrement())
+  uuid              String
+  SuspectOnHomicide SuspectOnHomicide[]
+  civilian          Civilian            @relation(fields: [civilianId], references: [id])
+  civilianId        Int
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @default(now())
+  deleted           Boolean?            @default(false)
+}
+
+enum LicenceType {
+  PPA1
+  PPA2
+  PPA3
+  DRIVING
+  HUNTING
+}
+
+model Licence {
+  id            Int         @id @default(autoincrement())
+  uuid          String
+  type          LicenceType
+  DeliveredBy   Agent       @relation(fields: [DeliveredById], references: [id])
+  DeliveredById Int
+  Civilian      Civilian    @relation(fields: [civilianId], references: [id])
+  civilianId    Int
+  valid         Boolean
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @default(now())
+  deleted       Boolean?    @default(false)
+}
+
+enum WeaponType {
+  COLDSTEEL
+  FIREARM
+  HEAVY
+  WAR
+}
+
+model Weapon {
+  id         Int        @id @default(autoincrement())
+  uuid       String
+  name       String
+  type       WeaponType
+  Civilian   Civilian?  @relation(fields: [civilianId], references: [id])
+  Agent      Agent?     @relation(fields: [agentId], references: [id])
+  agentId    Int?
+  civilianId Int?
+  Evidence   Evidence[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @default(now())
+  deleted    Boolean?   @default(false)
+}
+
+model CriminalCase {
+  id         Int              @id @default(autoincrement())
+  uuid       String
+  Records    CriminalRecord[]
+  Civilian   Civilian?
+  created_at DateTime         @default(now())
+  updated_at DateTime         @default(now())
+  deleted    Boolean?         @default(false)
+}
+
+model CriminalRecord {
+  id             Int          @id @default(autoincrement())
+  uuid           String
+  reason         String
+  content        String
+  Case           Case?        @relation(fields: [caseId], references: [id])
+  CriminalCase   CriminalCase @relation(fields: [criminalCaseId], references: [id])
+  criminalCaseId Int
+  caseId         Int?
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @default(now())
+  deleted        Boolean?     @default(false)
+}
+
+model Backup {
+  id         Int      @id @default(autoincrement())
+  uuid       String
+  type       String
+  entity     Entity   @relation(fields: [entityId], references: [id])
+  Agent      Agent    @relation(fields: [agentId], references: [id])
+  location   Location @relation(fields: [locationId], references: [id])
+  agentId    Int
+  locationId Int
+  entityId   Int
+  deleted    Boolean? @default(false)
+}
+
+model Location {
+  id      Int      @id @default(autoincrement())
+  x       String
+  y       String
+  z       String
+  street  String
+  Backup  Backup[]
+  deleted Boolean? @default(false)
+}
+
+model AgentsOnConversations {
+  agent          Agent        @relation(fields: [agentId], references: [id])
+  agentId        Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int
+
+  @@id([agentId, conversationId])
+}
+
+model Conversation {
+  id                    Int                     @id @default(autoincrement())
+  uuid                  String
+  messages              Message[]
+  AgentsOnConversations AgentsOnConversations[]
+}
+
+model Message {
+  id             Int           @id @default(autoincrement())
+  uuid           String
+  content        String
+  Conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  conversationId Int?
+}
