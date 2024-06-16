@@ -14,7 +14,8 @@ router.get('/', async (req, res) => {
                     entity: true
                 }
             },
-            Civilian: true
+            Civilian: true,
+            Grade: true
         }
     })
     res.json({data: agents});

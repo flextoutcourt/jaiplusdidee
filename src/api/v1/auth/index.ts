@@ -15,6 +15,14 @@ router.post('/', async (req, res, next) => {
     const agent = await prisma.agent.findFirstOrThrow({
         where: {
             matricule
+        },
+        include: {
+            Entities: {
+                include: {
+                    entity: true
+                }
+            },
+            Service: true
         }
     });
     if(agent.password === password){
