@@ -1,21 +1,43 @@
 import classNames from 'classnames';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Agent } from '../../auth/types/AuthType';
+import {Service} from "../../shift/types/shift"
 import useChannel from '../../pusher/hooks/useChannel';
+import { toast } from 'react-toastify';
 
 export default function ShiftItem({agent}: {agent: Agent}) {
+
+  const [ag, setAg] = useState<Agent>(agent);
 
   const {channel} = useChannel();
 
   useEffect(() => {
-    channel.bind(`shift:${agent.uuid}:service:take`, (data: any) => {
-      // data normally contains a new {Service} it has to be added to agent.Services
-      console.log(data);
-    });
-    channel.bind(`shift:${agent.uuid}:service:leave`, (data: any) => {
-      // data normmaly contains the id of the service that has to be removed from agent.Services
-      console.log(data);
+    if(channel){
+      channel.bind(`shift:${ag.uuid}:service:take`, (data: Service) => {
+        toast.success(`${ag.matricule} took his shift (${data.entity.name})`)
+        setAg((old: Agent) => ({
+          ...old,
+          Service: [
+            ...old.Service,
+            data
+          ]
+        }));
+      });
+      channel.bind(`shift:${ag.uuid}:service:leave`, (data: Service) => {
+        toast.error(`${ag.matricule} left his shift (${data.entity.name})`)
+        setAg((old: Agent) => ({
+          ...old,
+          Service: old.Service.filter((service: Service) => service.id !== data.id)
+        }));
+      })
+    }
+
+    return(() => {
+      if(channel){
+        channel.unbind(`shift:${ag.uuid}:service:take`);
+        channel.unbind(`shift:${ag.uuid}:service:leave`);
+      }
     })
   }, [channel])
 
@@ -23,9 +45,9 @@ export default function ShiftItem({agent}: {agent: Agent}) {
     <Link to={`/agents/${agent.uuid}`} className={classNames(
         "rounded-full p-1 w-8 h-8 min-w-8 min-h-8 flex items-center justify-center ring-2 ring-gray-200",
         "hover:z-50 hover:scale-105",
-        agent.Service.map((item) => item.entity.code === "SASPS" || item.entity.code === "SASPN").includes(true) ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+        ag.Service.map((item) => item.entity.code === "SASPS" || item.entity.code === "SASPN").includes(true) ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
     )}>
-        {agent.matricule}
+        {ag.matricule}
     </Link>
   );
 }

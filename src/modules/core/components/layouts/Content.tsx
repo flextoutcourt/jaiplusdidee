@@ -2,7 +2,6 @@ import { PropsWithChildren } from 'react';
 import useAuth from '../../../auth/hooks/useAuth';
 import Backup from '../../../backups/components/Backup';
 import ChannelProvider from '../../../pusher/providers/ChannelProvider';
-import PusherProvider from '../../../pusher/providers/PusherProvider';
 import ShiftList from '../../../shift/components/ShiftList';
 import ShiftProvider from '../../../shift/providers/ShiftProvider';
 
@@ -28,9 +27,7 @@ export default function Content({children}: PropsWithChildren) {
                                         <ShiftList />
                                     </ChannelProvider>
                                 </ShiftProvider>
-                                <PusherProvider>
-                                    <Backup />
-                                </PusherProvider>
+                                <Backup />
                             </div>
                         </div>
                     }

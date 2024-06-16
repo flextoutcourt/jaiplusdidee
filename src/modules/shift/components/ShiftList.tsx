@@ -7,17 +7,24 @@ import usePusher from '../../pusher/hooks/usePusher';
 import ShiftItem from './ShiftItem';
 import ShiftSearch from './ShiftSearch';
 import { filter } from '../utils/shift';
+import useAuth from '../../auth/hooks/useAuth';
 
 export default function ShiftList() {
 
     const {pusher, setPusher} = usePusher();
     const {setChannel} = useChannel();
+    const {user} = useAuth();
 
     const {data} = useSWR('/api/agents', fetcher);
     const [viewable, setViewable] = useState<Agent[]>(data);
 
     useEffect(() => {
-        const channel = pusher.subscribe('shift_channel');
+        let channel;
+        if(user.Entities.find(entity => entity.entity.code === 'SASPN')){
+            channel = pusher.subscribe('shift_channel_north');
+        }else{
+            channel = pusher.subscribe('shift_channel_south');
+        }
         setChannel(channel);
     }, [setPusher, setChannel])
 

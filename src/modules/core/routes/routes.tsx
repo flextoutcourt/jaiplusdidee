@@ -1,15 +1,22 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import AgentRoutes from "../../agents/routes/AgentRoutes"
+import { BrowserRouter } from "react-router-dom";
+import AgentRoutes from "../../agents/routes/AgentRoutes";
 import AuthRoutes from "../../auth/routes/AuthRoutes";
+import PusherProvider from "../../pusher/providers/PusherProvider";
 import NavbarProvider from "../providers/NavbarProvider";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Router = () => {
     return(
         <NavbarProvider>
-            <BrowserRouter>
-                <AuthRoutes/>
-                <AgentRoutes/>
-            </BrowserRouter>
+            <ToastContainer />
+            <PusherProvider>
+                <BrowserRouter>
+                    <AuthRoutes/>
+                    <AgentRoutes/>
+                </BrowserRouter>
+            </PusherProvider>
         </NavbarProvider>
     )
 }

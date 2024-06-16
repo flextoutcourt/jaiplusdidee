@@ -2,7 +2,8 @@ import { Dispatch, SetStateAction } from "react";
 
 export interface BackupType {
 
-
+    id:number;
+    uuid: string;
 
 }
 
