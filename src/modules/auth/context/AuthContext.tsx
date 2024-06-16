@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, createContext } from "react";
+import { Agent } from "../types/AuthType";
 
 type AuthContextType = {
-    user: any;
-    setUser: Dispatch<SetStateAction<any>>;
+    user: Agent;
+    setUser: Dispatch<SetStateAction<Agent>>;
 }
 
 const AuthContext = createContext<AuthContextType>(undefined as any);

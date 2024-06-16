@@ -15,6 +15,7 @@ export type Agent = {
     since: Date;
     password: string;
     Civilian: User;
+    Service: [any]
 }
 
 export type Entity = {

@@ -2,14 +2,23 @@ import { FormProvider, useForm } from "react-hook-form";
 import TextInput from "../../core/design-system/form/TextInput";
 import { Link } from "react-router-dom";
 import Button from "../../core/design-system/Button";
+import { login } from "../services/auth";
+import useAuth from "../hooks/useAuth";
 
 export default function AuthenticationForm() {
 
     const methods = useForm();
     const {handleSubmit} = methods;
 
-    const onSubmit = (data: any) => {
-        console.log(data);
+    const {user, setUser} = useAuth();
+
+    const onSubmit = async (data: any) => {
+      const agent = await login(data.email, data.password);
+      if(agent.data){
+        setUser(agent.data)
+      }else{
+        alert(agent.message)
+      }
     }
 
   return (
@@ -29,7 +38,7 @@ export default function AuthenticationForm() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <FormProvider {...methods}>
-                <TextInput name="email" label='Email address' type='email' />
+                <TextInput name="matricule" label='Matricule' type='text' />
                 <TextInput name="password" label="Password" type="password" 
                     extra={
                         <div className="text-sm">
