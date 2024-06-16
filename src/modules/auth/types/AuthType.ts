@@ -1,3 +1,5 @@
+import { Service } from "../../shift/types/shift";
+
 export type User = {
     id: number;
     uuid: string;
@@ -14,13 +16,21 @@ export type Agent = {
     matricule: string;
     since: Date;
     password: string;
+    deleted: boolean;
     Civilian: User;
-    Service: [any]
+    Service: Service[];
+    Entities: Entity[];
+    Grade: Grade;
+}
+
+export type Grade = {
+    name: string;
+    rank: string
 }
 
 export type Entity = {
-    // SASP S, SASP N, SPECIAL, SAMD, SAFD, MAIRIE, GOUV, PRES
-    name: 'SASP SUD'|'SASP NORD'|'SAMD'|'SAFD'|'MAIRIE'|'GOUV'|'PRESIDENT'|'PRESSE'
+    code: 'SASPN'|'SASPS'|'DOA'|'CRIME'|'HP'|'HRT';
+    name: 'SASP SUD'|'SASP NORD'|'SAMD'|'SAFD'|'MAIRIE'|'GOUV'|'PRESIDENT'|'PRESSE';
 }
 
 export type Group ={
