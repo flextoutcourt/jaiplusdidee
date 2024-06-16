@@ -117,6 +117,16 @@ model Agent {
   created_at    DateTime                @default(now())
   updated_at    DateTime                @default(now())
   deleted       Boolean?                @default(false)
+  Service       Service[]
+}
+
+model Service {
+  id       Int    @id @default(autoincrement())
+  uuid     String
+  agent    Agent  @relation(fields: [agentId], references: [id])
+  entity   Entity @relation(fields: [entityId], references: [id])
+  agentId  Int
+  entityId Int
 }
 
 model EntitiesOnAgents {
@@ -143,14 +153,15 @@ enum EntityE {
 model Entity {
   id         Int                @id @default(autoincrement())
   uuid       String
-  name       EntityE
-  code       String
+  name       String
+  code       EntityE
   channel    String
   agents     EntitiesOnAgents[]
   Backup     Backup[]
   created_at DateTime           @default(now())
   updated_at DateTime           @default(now())
   deleted    Boolean?           @default(false)
+  Service    Service[]
 }
 
 model Sanction {
