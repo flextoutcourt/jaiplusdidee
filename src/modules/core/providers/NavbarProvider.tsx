@@ -5,10 +5,12 @@ export default function NavbarProvider({children}: PropsWithChildren) {
 
     const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(true);
+    const [title, setTitle] = useState<string>('Dashboard')
 
     const value = {
         menuOpen, setMenuOpen,
-        profileMenuOpen, setProfileMenuOpen
+        profileMenuOpen, setProfileMenuOpen,
+        title, setTitle
     }
 
   return (

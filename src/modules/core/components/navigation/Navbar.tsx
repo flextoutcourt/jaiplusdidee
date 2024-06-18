@@ -28,7 +28,7 @@ const links = [
     },
     {
         name: 'Civilians',
-        href: "/cases",
+        href: "/civilians",
         icon: <UserGroupIcon className="h-5" />
     },
     {

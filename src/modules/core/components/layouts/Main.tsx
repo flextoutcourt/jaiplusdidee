@@ -7,13 +7,12 @@ import Sidebar from '../navigation/Sidebar';
 import Content from './Content';
 
 interface MainLayoutType extends PropsWithChildren {
-    title?: string;
     noBackups?: boolean
 }
 
-export default function MainLayout({children, title}: MainLayoutType) {
+export default function MainLayout({children}: MainLayoutType) {
 
-    const {menuOpen} = useNavbarContext();
+    const {menuOpen, title} = useNavbarContext();
 
   return (
     <div className="flex w-screen overflow-hidden">

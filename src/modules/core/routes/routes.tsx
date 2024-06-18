@@ -6,6 +6,7 @@ import NavbarProvider from "../providers/NavbarProvider";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CivilianRoutes from "../../Civilian/routes/CivilianRoutes";
 
 const Router = () => {
     return(
@@ -15,6 +16,7 @@ const Router = () => {
                 <BrowserRouter>
                     <AuthRoutes/>
                     <AgentRoutes/>
+                    <CivilianRoutes />
                 </BrowserRouter>
             </PusherProvider>
         </NavbarProvider>

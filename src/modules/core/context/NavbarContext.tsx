@@ -5,6 +5,8 @@ interface NavbarContextType {
     setMenuOpen: Dispatch<SetStateAction<boolean>>;
     profileMenuOpen: boolean;
     setProfileMenuOpen: Dispatch<SetStateAction<boolean>>;
+    title: string;
+    setTitle: Dispatch<SetStateAction<string>>;
 }
 
 const NavbarContext = createContext<NavbarContextType>(undefined as any);
