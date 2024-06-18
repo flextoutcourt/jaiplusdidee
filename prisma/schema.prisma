@@ -104,13 +104,12 @@ model Agent {
   Grade         Grade                   @relation(fields: [gradeId], references: [id], onDelete: Cascade)
   gradeId       Int
   password      String
-  Civilian      Civilian                @relation(fields: [civilianId], references: [id], onDelete: Cascade)
+  Civilian      Civilian                @relation(fields: [civilianId], references: [id])
   Sanctions     Sanction[]
   Reports       Report[]
   Licence       Licence[]
   Weapons       Weapon[]
   Testimony     Testimony[]
-  civilianId    Int                     @unique
   Backup        Backup[]
   Entities      EntitiesOnAgents[]
   Conversations AgentsOnConversations[]
@@ -118,13 +117,14 @@ model Agent {
   updated_at    DateTime                @default(now())
   deleted       Boolean?                @default(false)
   Service       Service[]
+  civilianId    Int
 }
 
 model Service {
   id       Int    @id @default(autoincrement())
   uuid     String
-  agent    Agent  @relation(fields: [agentId], references: [id])
-  entity   Entity @relation(fields: [entityId], references: [id])
+  agent    Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  entity   Entity @relation(fields: [entityId], references: [id], onDelete: Cascade)
   agentId  Int
   entityId Int
 }
