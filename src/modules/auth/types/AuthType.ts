@@ -8,6 +8,7 @@ export type User = {
     alias: string;
     phone: string;
     dateOfBirth: Date;
+    deleted: boolean;
 }
 
 export type Agent = {
