@@ -4,9 +4,7 @@ import express from "express";
 import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient();
 
-const router = express.Router();
-
-router.get('/', async (req, res) => {
+export const GET = async (req, res) => {
     const agents = await prisma.agent.findMany({
         include:{
             Service: {
@@ -19,6 +17,4 @@ router.get('/', async (req, res) => {
         }
     })
     res.json({data: agents});
-});
-
-export default router;
+}
