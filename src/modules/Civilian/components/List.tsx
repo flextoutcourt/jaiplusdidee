@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { fetcher } from '../../core/utils/functions';
 import Small from './Details/Small';
 import useSelected from '../../core/hooks/useSelected';
@@ -11,29 +11,27 @@ import SwrContext from '../../core/context/SwrContext';
 import SwrProvider from '../../core/providers/SwrProvider';
 import useSwrContext from '../../core/hooks/useSwrContext';
 
-export default function List({}) {
-
-    const {data, mutate} = useSWR('/api/civilians', fetcher);
+export default function List({items}: {items: User[]}) {
 
     const {selected, setSelected} = useSelected();
 
     const handleChange = (e: any) => {
         if(e.target.checked){
-            setSelected(data);
+            setSelected(items);
         }else{
             setSelected([]);
         }
     }
 
     const isSelected = () => {
-        return selected?.length === data?.length
+        return selected?.length === items?.length
     }
 
     const deleteSelected = (e: any) => {
         DeleteMany(selected).then(() => {
-            mutate();
+            mutate('/api/civilians');
             setSelected([]);
-            toast.success("test");
+            toast.success("Selected agents has been deleteds");
         });
     }
 
@@ -51,8 +49,8 @@ export default function List({}) {
             </div>
             <input type="text" className="rounded-md bg-gray-200 max-w-3xl py-1 px-2" />
         </div>
-        <div className="grid grid-cols-4 gap-4">
-            {data?.map((item: User) => (
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {items?.map((item: User) => (
                 <Small civilian={item} key={item.uuid} />
             ))}
         </div>

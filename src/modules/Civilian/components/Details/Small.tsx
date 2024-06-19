@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { User } from '../../../auth/types/AuthType';
 import Button from '../../../core/design-system/Button';
-import { ChatBubbleOvalLeftEllipsisIcon, CheckIcon, EyeIcon, FolderIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleOvalLeftEllipsisIcon, CheckIcon, ClipboardDocumentCheckIcon, EyeIcon, FolderIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import useSelected from '../../../core/hooks/useSelected';
 import { Link } from 'react-router-dom';
 import { Delete, Reintegrate } from '../../services/CivilianServices';
 import { mutate } from 'swr';
+import { FaGun, FaCar, FaFolderOpen } from "react-icons/fa6";
+import { TbCertificate } from "react-icons/tb";
+import { toast } from 'react-toastify';
 
 interface DetailProps {
     civilian: User;
@@ -28,46 +31,46 @@ export default function Small({civilian}: DetailProps) {
         return selected.find((item: User) => item.uuid === civilian.uuid)
     }
 
-    const reintegrateItem = (e: any) => {
-        Reintegrate(civilian).then(() => {
-            mutate('/api/civilians');
-        })
-    }
-
     const deleteItem = (e: any) => {
         Delete(civilian).then(() => {
             mutate('/api/civilians');
+            toast.success("Agent successfully deleted")
         })
     }
 
   return (
     <div className={classNames(
-        "bg-gray-200 rounded-lg shadow-md p-4 relative flex flex-col gap-4",
+        "rounded-lg shadow-md p-4 relative flex flex-col gap-4",
         isSelected() && "ring ring-indigo-500",
-        civilian.deleted && 'bg-red-300'
+        civilian.deleted ? 'bg-red-300' : 'bg-white'
     )}>
         <p>{civilian.firstname} {civilian.lastname} <small>({civilian.alias})</small></p>
         <img src="https://picsum.photos/500" className="w-full aspect-video rounded-lg" />
         <div className="flex gap-4 text-indigo-500 font-bold">
             <div className="flex gap-2">
-                <FolderIcon className="h-4" />
-                <span className="text-xs">2</span>
+                <FaFolderOpen className="h-4" />
+                <span className="text-xs">{civilian?.CriminalCase?.Records?.length ?? 0}</span>
             </div>
             <div className="flex gap-2">
-                <ChatBubbleOvalLeftEllipsisIcon className="h-4" />
-                <span className="text-xs">4</span>
+                <TbCertificate className="h-4" />
+                <span className="text-xs">{civilian?.Licence?.length ?? 0}</span>
+            </div>
+            <div className="flex gap-2">
+                <FaGun className="h-4" />
+                <span className="text-xs">{civilian?.Weapon?.length ?? 0}</span>
+            </div>
+            <div className="flex gap-2">
+                <FaCar className="h-4" />
+                <span className="text-xs">{civilian?.Car?.length ?? 0}</span>
             </div>
         </div>
         <div className="flex justify-between gap-2">
-            <Button variant='success' onClick={reintegrateItem} className=" max-w-12">
-                <CheckIcon className="h-4" />
-            </Button>
-            <Link to={`/civilians/${civilian.uuid}`}>
-                <Button>
+            <Button>
+                <Link to={`/civilians/${civilian.uuid}`}>
                     <EyeIcon className="h-4" />
                     <span className="hidden 2xl:block">View</span>
-                </Button>
-            </Link>
+                </Link>
+            </Button>
             <Button variant='delete' onClick={deleteItem} >
                 <TrashIcon className="h-4" />
                 <span className="hidden 2xl:block">Delete</span>
