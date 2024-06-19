@@ -70,7 +70,7 @@ export default function Navbar({}) {
                             <div className="pl-3 items-center flex left-0 top-0 bottom-0 absolute pointer-events-none">
                                 <LockClosedIcon className="w-5" />
                             </div>
-                            <input type="search" placeholder="Search" className="pl-10 pr-3 py-[0.375rem] bg-white/20 border-0 rounded-md w-full focus:bg-white outline-none" />
+                            <input type="search" placeholder="Search" className="pl-10 pr-3 py-[0.375rem] bg-white/20 border-0 rounded-md w-full focus:bg-white outline-none placeholder:text-gray-200" />
                         </div>
                     </div>
                     <Popover className="group">
