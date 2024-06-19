@@ -5,7 +5,39 @@ import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const GET = async (req, res) => {
-    const civilians = await prisma.civilian.findMany();
+    const civilians = await prisma.civilian.findMany({
+        where: {
+            deleted: false,
+        },
+        include: {
+            CriminalCase: {
+                include: {
+                    Records: {
+                        include: {
+                            Case: true
+                        }
+                    }
+                }
+            },
+            Testimony: true,
+            Weapon: {
+                include: {
+                    Evidence: true
+                }
+            },
+            Licence: {
+                include: {
+                    DeliveredBy: {
+                        include: {
+                            Civilian: true,
+                            Grade: true,
+                        }
+                    }
+                }
+            },
+            Car: true
+        }
+    });
     res.json({data: civilians});
 }
 
