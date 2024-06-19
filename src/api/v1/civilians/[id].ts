@@ -12,8 +12,32 @@ export const GET = async (req, res) => {
             uuid: id
         },
         include: {
-            CriminalCase: true,
-            Testimony: true
+            CriminalCase: {
+                include: {
+                    Records: {
+                        include: {
+                            Case: true
+                        }
+                    }
+                }
+            },
+            Testimony: true,
+            Weapon: {
+                include: {
+                    Evidence: true
+                }
+            },
+            Licence: {
+                include: {
+                    DeliveredBy: {
+                        include: {
+                            Civilian: true,
+                            Grade: true,
+                        }
+                    }
+                }
+            },
+            Car: true
         }
     });
     res.json({data: civilian});
