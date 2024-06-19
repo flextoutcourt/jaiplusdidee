@@ -1,4 +1,8 @@
+import { CriminalCase } from './../../criminalCases/types/CriminalCase';
+import { CarType } from "../../cars/types/CarType";
+import { LicenceType } from "../../licences/types/LicenceType";
 import { Service } from "../../shift/types/shift";
+import { WeaponType } from "../../weapons/types/WeaponType";
 
 export type User = {
     id: number;
@@ -9,6 +13,10 @@ export type User = {
     phone: string;
     dateOfBirth: Date;
     deleted: boolean;
+    Car: CarType[];
+    Weapon: WeaponType[];
+    Licence: LicenceType[];
+    CriminalCase: CriminalCase;
 }
 
 export type Agent = {
