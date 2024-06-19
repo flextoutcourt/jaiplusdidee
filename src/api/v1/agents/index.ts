@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 
 export const GET = async (req, res) => {
     const agents = await prisma.agent.findMany({
+        where: {deleted: false},
         include:{
             Service: {
                 include: {
