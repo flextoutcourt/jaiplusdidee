@@ -5,6 +5,7 @@ import useNavbarContext from '../../hooks/useNavbarContext';
 import Navbar from '../navigation/Navbar';
 import Sidebar from '../navigation/Sidebar';
 import Content from './Content';
+import classNames from 'classnames';
 
 interface MainLayoutType extends PropsWithChildren {
     noBackups?: boolean
@@ -12,7 +13,7 @@ interface MainLayoutType extends PropsWithChildren {
 
 export default function MainLayout({children}: MainLayoutType) {
 
-    const {menuOpen, title} = useNavbarContext();
+    const {menuOpen, title, wanted} = useNavbarContext();
 
   return (
     <div className="flex w-screen overflow-hidden">
@@ -31,7 +32,12 @@ export default function MainLayout({children}: MainLayoutType) {
                 </div>
             </Transition>
             <div className={"w-full flex-shrink-0 z-10"}>
-                <header className={"w-[calc(100vw+2rem)] bg-indigo-600 px-20 text-white pb-24 sticky -mx-4 shadow-lg"}>
+                <header className={
+                    classNames(
+                        "w-[calc(100vw+2rem)] bg-indigo-600 px-20 text-white pb-24 sticky -mx-4 shadow-lg",
+                        wanted && "bg-red-500"
+                    )
+                }>
                     <Navbar />
                     <div className="h-[1px] w-full bg-white/25 rounded-lg"></div>
                     <div className="py-10">
