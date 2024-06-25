@@ -4,8 +4,6 @@ import express from "express";
 import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient();
 
-const router = express.Router();
-
 export const GET = async (req, res) => {
     const {id} = req.params;
     const agent = await prisma.agent.findFirstOrThrow({
@@ -27,4 +25,33 @@ export const GET = async (req, res) => {
     res.send({data: agent});
 }
 
-export default router;
+export const PUT = async (req, res) => {
+    const {id} = req.params;
+    const {body} = req.body;
+
+    const agent = await prisma.agent.update({
+        where: {
+            id
+        },
+        data: {
+            ...body
+        }
+    });
+
+    res.json({data: agent});
+}
+
+export const DELETE = async (req, res) => {
+    const {id} = req.params;
+    
+    const agent = await prisma.agent.update({
+        where: {
+            id: parseInt(id)
+        },
+        data: {
+            deleted: true
+        }
+    });
+
+    res.json({data: agent});
+}

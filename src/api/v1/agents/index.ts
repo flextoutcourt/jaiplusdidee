@@ -13,9 +13,31 @@ export const GET = async (req, res) => {
                     entity: true
                 }
             },
+            Entities: {
+                include: {
+                    entity: true
+                }
+            },
             Civilian: true,
             Grade: true
         }
     })
+    res.json({data: agents});
+}
+
+export const DELETE = async (req, res) => {
+
+    const {ids} = req.body;
+
+    const agents = await prisma.agent.updateMany({
+        where: {
+            id: {
+                in: ids
+            }
+        },
+        data: {
+            deleted: true
+        }
+    });
     res.json({data: agents});
 }
