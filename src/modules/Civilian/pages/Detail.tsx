@@ -1,13 +1,14 @@
-import React from 'react';
 import MainLayout from '../../core/components/layouts/Main';
-import AgentDetail from '../../agents/pages/Detail';
 import ExtendedDetails from '../components/Details/Extended';
+import CivilianProvider from '../providers/CivilianProvider';
 
 export default function CivilianDetail() {
 
   return (
     <MainLayout>
-      <ExtendedDetails />
+      <CivilianProvider>
+        <ExtendedDetails />
+      </CivilianProvider>
     </MainLayout>
   );
 }
