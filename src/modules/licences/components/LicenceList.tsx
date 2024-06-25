@@ -25,7 +25,9 @@ export default function LicenceList({items}: {items: LicenceType[]}) {
 
   return (
     <>
-        <SearchInput handleChange={handleChange} />
+        <div className="mb-2">
+            <SearchInput handleChange={handleChange} />
+        </div>
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
             {search.map((item) => (
                 <LicenceItem key={item.uuid} licence={item} />
