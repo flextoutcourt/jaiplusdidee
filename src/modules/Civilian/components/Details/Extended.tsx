@@ -15,6 +15,12 @@ import WeaponList from '../../../weapons/components/WeaponList';
 
 import { FaGun, FaCar, FaFolderOpen } from "react-icons/fa6";
 import { TbCertificate } from "react-icons/tb";
+import useCivilian from '../../hooks/useCivilian';
+import Licences from './Tabs/Licences';
+import Weapons from './Tabs/Weapons';
+import Cars from './Tabs/Cars';
+import CriminalCase from './Tabs/CriminalCase';
+import Title from '../../../core/components/Title';
 
 
 const items = [
@@ -31,7 +37,7 @@ const items = [
     icon: <FaCar />
   },
   {
-    title: 'Testimonies',
+    title: 'Suspected',
     icon: <FaFolderOpen />
   }
 ]
@@ -40,95 +46,60 @@ export default function ExtendedDetails() {
 
     const {id} = useParams();
     const {setTitle, wanted, setWanted} = useNavbarContext();
+    const {civilian, setCivilian} = useCivilian();
 
-    const {data} = useSWR<User>(`/api/civilians/${id}`, fetcher);
+    const {data, isLoading} = useSWR<User>(`/api/civilians/${id}`, fetcher);
 
     useEffect(() => {
         if(data){
             setTitle(`${data.firstname} ${data.lastname}`)
+            setCivilian(data);
         }
         setWanted(false)
+
+        return(() => {
+          setTitle('')
+        })
     }, [data])
 
   return (
     <div className="flex flex-col relative">
       <TabGroup>
         <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-3 lg:col-span-1 bg-white p-4 rounded-lg shadow-lg max-h-80">
+          <div className="col-span-3 lg:col-span-1 bg-white p-4 rounded-lg shadow-lg min-h-80">
             <div className="relative">
               <img src="https://picsum.photos/500/250" alt="" className="rounded-lg w-full max-h-24" />
               <img src="https://picsum.photos/96" alt="" className="rounded-full ring-4 ring-white mx-auto -mt-12 z-50 relative" />
             </div>
             <div className="flex w-full items-center justify-center gap-2 my-2">
-              <p className="font-extrabold text-center text-md xl:text-xl">{data?.firstname} {data?.lastname}</p>
+              <Title isLoading={isLoading}>{civilian?.firstname} {civilian?.lastname}</Title>
+              
               {/* <CheckCircleIcon className="h-6 text-green-500" /> */}
               <XCircleIcon className="h-6 text-red-500" />
             </div>
-            <p className="text-center my-2 hidden xl:block">{data?.alias && `(${data?.alias})`}</p>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-4 font-extrabold">
+            <p className="text-center my-2 hidden xl:block">{civilian?.alias && `(${civilian?.alias})`}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-4 font-extrabold">
               <div className="flex lg:block justify-center text-center gap-4">
-                <p className="text-indigo-500">{data?.Car.length ?? 0}</p>
-                <p>Car{data?.Car.length !== 1 && "s"}</p>
+                <p className="text-indigo-500">{civilian?.Car.length ?? 0}</p>
+                <p>Car{civilian?.Car.length !== 1 && "s"}</p>
               </div>
               <div className="flex lg:block justify-center text-center gap-4">
-                <p className="text-indigo-500">{data?.Licence.length ?? 0}</p>
-                <p>Licence{data?.Licence.length !== 1 && "s"}</p>
+                <p className="text-indigo-500">{civilian?.Licence.length ?? 0}</p>
+                <p>Licence{civilian?.Licence.length !== 1 && "s"}</p>
               </div>
               <div className="flex lg:block justify-center text-center gap-4">
-                <p className="text-indigo-500">{data?.Weapon.length ?? 0}</p>
-                <p>Weapon{data?.Weapon.length !== 1 && "s"}</p>
+                <p className="text-indigo-500">{civilian?.Weapon.length ?? 0}</p>
+                <p>Weapon{civilian?.Weapon.length !== 1 && "s"}</p>
               </div>
               <div className="flex lg:block justify-center text-center gap-4">
-                <p className="text-indigo-500">{(data?.CriminalCase && data?.CriminalCase?.Records?.length) ?? "0"}</p>
+                <p className="text-indigo-500">{(civilian?.CriminalCase && civilian?.CriminalCase?.Records?.length) ?? "0"}</p>
                 <p>Records</p>
               </div>
             </div>
           </div>
-          <div className="col-span-3 lg:col-span-2 bg-white rounded-lg shadow-lg max-h-80 overflow-auto">
+          <div className="col-span-3 lg:col-span-2 bg-white rounded-lg shadow-lg min-h-80 max-h-80 overflow-auto">
             <div className="grid grid-cols-1 gap-2 mb-2 p-4">
-              {data && data.CriminalCase ? Object.entries(groupByKey(data?.CriminalCase?.Records, 'caseId')).map(([key, items]) => (
-              <Disclosure>
-                {({open}) => (
-                  <div className="relative">
-                    <DisclosureButton className="sticky top-0 flex items-center gap-2 bg-indigo-200 w-full p-2 mb-2 rounded-lg z-20">
-                      <p className="text-indigo-600 font-extrabold">{items[0].Case.name.toLocaleUpperCase()}</p>
-                      <ChevronDownIcon className={classNames("w-5 duration-200 text-indigo-600", open && 'rotate-180')} />
-                    </DisclosureButton>
-                    <Transition
-                      show={open}
-                      enter="transition-all ease-in-out duration-200 origin-top"
-                      enterFrom="scale-y-50 opacity-0"
-                      enterTo='scale-y-100 opacity-100'
-                      leave='transition-all ease-in duration-200 origin-top'
-                      leaveFrom='scale-y-100 opacity-100'
-                      leaveTo='scale-y-50 opacity-0'
-                    >
-                      <DisclosurePanel>
-                        <div className="grid grid-cols-1 gap-2">
-                          {items.map((item: CriminalRecord) => (
-                            <div className={
-                              classNames(
-                                "bg-gray-200 rounded-lg p-2",
-                                item.deleted && 'bg-red-200'
-                              )
-                            }>
-                              <p className="font-extrabold">{item.reason.toLocaleUpperCase()}</p>
-                              <p className="text-xs text-gray-500">
-                                {item.content}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </DisclosurePanel>
-                    </Transition>
-                  </div>
-                )}
-              </Disclosure>
-              )) : 
-                <div>
-                  <p className="font-extrabold uppercase text-center">This user doesn't have a criminal case</p>
-                </div>
-              }
+              <CriminalCase />
             </div>
           </div>
           <div className="col-span-3 bg-white rounded-lg shadow-lg">
@@ -153,15 +124,9 @@ export default function ExtendedDetails() {
           </div>
           <div className="col-span-3 bg-white rounded-lg shadow-lg p-3">
             <TabPanels>
-              <TabPanel>
-                {data && <LicenceList items={data?.Licence} />}
-              </TabPanel>
-              <TabPanel>
-                {data && <WeaponList items={data?.Weapon} />}
-              </TabPanel>
-              <TabPanel>
-                {data && <CarList items={data?.Car} />} 
-              </TabPanel>
+              <Licences />
+              <Weapons />
+              <Cars />
               <TabPanel>
                 Testimonies
               </TabPanel>

@@ -34,7 +34,7 @@ export default function Small({civilian}: DetailProps) {
     const deleteItem = (e: any) => {
         Delete(civilian).then(() => {
             mutate('/api/civilians');
-            toast.success("Agent successfully deleted")
+            toast.success("Civilian successfully deleted")
         })
     }
 
@@ -65,12 +65,12 @@ export default function Small({civilian}: DetailProps) {
             </div>
         </div>
         <div className="flex justify-between gap-2">
-            <Button>
-                <Link to={`/civilians/${civilian.uuid}`}>
-                    <EyeIcon className="h-4" />
-                    <span className="hidden 2xl:block">View</span>
-                </Link>
-            </Button>
+            <Link to={`/civilians/${civilian.uuid}`}>
+                <Button>
+                        <EyeIcon className="h-4" />
+                        <span className="hidden 2xl:block">View</span>
+                </Button>
+            </Link>
             <Button variant='delete' onClick={deleteItem} >
                 <TrashIcon className="h-4" />
                 <span className="hidden 2xl:block">Delete</span>
